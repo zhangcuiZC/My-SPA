@@ -37,7 +37,7 @@ module.exports = (function(){
 
 		slider_open_time : 250,
 		slider_close_time : 250,
-		slider_opened_em : 16,
+		slider_opened_em : 20,
 		slider_closed_em : 2,
 		slider_opened_title : 'Click to close',
 		slider_closed_title : 'Click to open',
@@ -94,7 +94,7 @@ module.exports = (function(){
 		stateMap.px_per_em = px_per_em;
 		stateMap.slider_closed_px = configMap.slider_closed_em * px_per_em;
 		stateMap.slider_opened_px = opened_height_em * px_per_em;
-		jqueryMap.$slider.css('height', (opened_height_em - 2) * px_per_em);
+		jqueryMap.$slider.css('height', (opened_height_em - 8) * px_per_em);
 	};
 
 	setSliderPosition = function(position_type, callback){

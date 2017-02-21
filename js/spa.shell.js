@@ -1,5 +1,6 @@
 require("../css/spa.shell.css");
 var spa_chat = require("./spa.chat.js");
+var spa_model = require("./spa.model.js");
 
 module.exports = (function(){
 	// --------------------------------begin module scope variables
@@ -99,14 +100,14 @@ module.exports = (function(){
 		if(!anchor_map_previous || _s_chat_previous !== _s_chat_proposed){
 			s_chat_proposed = anchor_map_proposed.chat;
 			switch(s_chat_proposed){
-				case 'open' :
+				case 'opened' :
 					is_ok = spa_chat.setSliderPosition('opened');
 					break;
 				case 'closed' :
 					is_ok = spa_chat.setSliderPosition('closed');
 					break;
 				default :
-					toggleChat(false);
+					spa_chat.setSliderPosition('closed');
 					delete anchor_map_proposed.chat;
 					$.uriAnchor.setAnchor(anchor_map_proposed, null, true);
 			}
@@ -134,8 +135,8 @@ module.exports = (function(){
 
 	// --------------------------------begin public methods
 	initModule = function($container){
-		stateMap.$container = $container;
 		$container.html(configMap.main_html);
+		stateMap.$container = $container;
 		setJqueryMap();
 
 		$.uriAnchor.configModule({
