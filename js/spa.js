@@ -1,3 +1,4 @@
+require("../css/spa.css");
 var spa_shell=require("./spa.shell.js");
 
 module.exports = (function(){
