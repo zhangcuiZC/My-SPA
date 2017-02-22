@@ -39,6 +39,7 @@ module.exports = (function(){
 		slider_close_time : 250,
 		slider_opened_em : 20,
 		slider_closed_em : 2,
+		window_height_min_em : 20,
 		slider_opened_title : 'Click to close',
 		slider_closed_title : 'Click to open',
 
@@ -56,7 +57,8 @@ module.exports = (function(){
 	},
 	jqueryMap = {},
 
-	setJqueryMap, getEmSize, setPxSizes, setSliderPosition, onClickToggle, configModule, initModule;
+	setJqueryMap, getEmSize, setPxSizes, setSliderPosition, onClickToggle, configModule, initModule,
+	removeSlider, handleResize;
 	// --------------------------------end module scope variables
 
 	// --------------------------------begin utility methods
@@ -85,11 +87,12 @@ module.exports = (function(){
 	};
 
 	setPxSizes = function(){
-		var px_per_em, opened_height_em;
+		var px_per_em, window_height_em, opened_height_em;
 
 		px_per_em = getEmSize(jqueryMap.$slider.get(0));
+		window_height_em = Math.floor(($(window).height()/px_per_em) + 0.5);
 
-		opened_height_em = configMap.slider_opened_em;
+		opened_height_em = window_height_em > configMap.window_height_min_em ? configMap.slider_opened_em : window_height_em - 0.5;
 
 		stateMap.px_per_em = px_per_em;
 		stateMap.slider_closed_px = configMap.slider_closed_em * px_per_em;
@@ -178,10 +181,42 @@ module.exports = (function(){
 		return true;
 	};
 
+	removeSlider = function(){
+		if (jqueryMap.$slider) {
+			jqueryMap.$slider.fadeIn(400, function() {
+				$(this).remove();
+			});
+			jqueryMap = {};
+		}
+		stateMap.$append_target = null;
+		stateMap.position_type = 'closed';
+
+		configMap.chat_model = null;
+		configMap.people_model = null;
+		configMap.set_chat_anchor = null;
+
+		return true;
+	};
+
+	handleResize = function(){
+		if (!jqueryMap.$slider) {
+			return false;
+		}
+
+		setPxSizes();
+		if (stateMap.position_type === 'opened') {
+			jqueryMap.$slider.css('height', stateMap.slider_opened_px);
+		}
+
+		return true;
+	};
+
 	return {
 		setSliderPosition : setSliderPosition,
 		configModule : configModule,
-		initModule : initModule
+		initModule : initModule,
+		removeSlider : removeSlider,
+		handleResize : handleResize
 	};
 	// --------------------------------end public methods
 }());

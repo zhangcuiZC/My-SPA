@@ -19,14 +19,17 @@ module.exports = (function(){
 		  + '<div class="spa-shell-main-content"></div>'
 		 + '</div>'
 		 + '<div class="spa-shell-footer"></div>'
-		 + '<div class="spa-shell-modal"></div>'
+		 + '<div class="spa-shell-modal"></div>',
+		 resize_interval : 200,
 	},
 	stateMap = {
-		anchor_map : {}
+		$container : undefined,
+		anchor_map : {},
+		resize_idto : undefined
 	},
 	jqueryMap = {},
 
-	copyAnchorMap, setJqueryMap, changeAnchorPart, onHashchange, setChatAnchor, initModule;
+	copyAnchorMap, setJqueryMap, changeAnchorPart, onHashchange, onResize, setChatAnchor, initModule;
 	// --------------------------------end module scope variables
 
 	// --------------------------------begin utility methods
@@ -125,6 +128,19 @@ module.exports = (function(){
 
 		return false;
 	};
+
+	onResize = function(){
+		if (stateMap.resize_idto) {
+			return true;
+		}
+
+		spa_chat.handleResize();
+		stateMap.resize_idto = setTimeout(function(){
+			stateMap.resize_idto = undefined;
+		}, configMap.resize_interval);
+
+		return true;
+	};
 	// --------------------------------end event handlers
 
 	// --------------------------------begin callbacks
@@ -142,7 +158,7 @@ module.exports = (function(){
 		$.uriAnchor.configModule({
 			schema_map : configMap.anchor_schema_map
 		});
-		$(window).bind('hashchange', onHashchange).trigger('hashchange');
+		$(window).bind('hashchange', onHashchange).bind('resize', onResize).trigger('hashchange');
 
 		spa_chat.configModule({
 			set_chat_anchor : setChatAnchor,
