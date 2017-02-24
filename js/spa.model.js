@@ -1,4 +1,4 @@
-var spa_fake = required("./spa.fake.js");
+var spa_fake = require("./spa.fake.js");
 
 module.exports = (function(){
 	'use strict';
@@ -8,13 +8,16 @@ module.exports = (function(){
 	},
 	stateMap = {
 		anon_user : null,
+		cid_serial : 0,
 		people_cid_map : {},
-		people_db : TAFFY()
+		people_db : TAFFY(),
+		user : null
 	},
 
 	isFakeData = true,
 
-	personProto, makePerson, people, initModule;
+	personProto, makeCid, clearPeopleDb, completeLogin,
+	makePerson, removePerson, people, initModule;
 	// --------------------------------end module scope variables
 
 	// --------------------------------begin utility methods
@@ -26,6 +29,22 @@ module.exports = (function(){
 			return this.cid === stateMap.anon_user.cid;
 		}
 	};
+
+	makeCid = function(){
+		return 'c' + String(stateMap.cid_serial++);
+	};
+
+	clearPeopleDb = function(){
+		var user = stateMap.user;
+		stateMap.people_db = TAFFY();
+		stateMap.people_cid_map = {};
+		if (user) {
+			stateMap.people_db.insert(user);
+			stateMap.people_cid_map[user.cid] = user;
+		}
+	};
+
+	// ********************
 
 	makePerson = function(person_map){
 		var person,
@@ -81,20 +100,21 @@ module.exports = (function(){
 		});
 
 		stateMap.user = stateMap.anon_user;
-	};
+	
 
-	if (isFakeData) {
-		people_list = spa_fake.getPeopleList();
-		for (i = 0; i < people_list.length; i++) {
-			person_map = people_list[i];
-			makePerson({
-				cid : person_map._id,
-				css_map : person_map.css_map,
-				id : person_map._id,
-				name : person_map.name
-			});
+		if (isFakeData) {
+			people_list = spa_fake.getPeopleList();
+			for (i = 0; i < people_list.length; i++) {
+				person_map = people_list[i];
+				makePerson({
+					cid : person_map._id,
+					css_map : person_map.css_map,
+					id : person_map._id,
+					name : person_map.name
+				});
+			}
 		}
-	}
+	};
 
 	return {
 		initModule : initModule,

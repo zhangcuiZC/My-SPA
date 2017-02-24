@@ -7,6 +7,14 @@ module.exports = (function(){
 	var initModule = function($container){
 		spa_model.initModule();
 		spa_shell.initModule($container);
+
+		// var peopleDb = spa_model.people.get_db();
+		// var peopleList = peopleDb().get();
+
+		// console.log(peopleList);
+		// peopleDb().each(function(person, idx) {
+		// 	console.log(person.name);
+		// });
 	};
 
 	return {
