@@ -3,6 +3,7 @@ var spa_chat = require("./spa.chat.js");
 var spa_model = require("./spa.model.js");
 
 module.exports = (function(){
+	'use strict';
 	// --------------------------------begin module scope variables
 	var configMap = {
 		anchor_schema_map : {
@@ -10,7 +11,10 @@ module.exports = (function(){
 		},
 		main_html : String()
 		 + '<div class="spa-shell-head">'
-		  + '<div class="spa-shell-head-logo"></div>'
+		  + '<div class="spa-shell-head-logo">'
+		  	+ '<h1>SPA</h1>'
+		  	+ '<p>JavaScript end to end</p>'
+		  + '</div>'
 		  + '<div class="spa-shell-head-acct"></div>'
 		  + '<div class="spa-shell-head-search"></div>'
 		 + '</div>'
@@ -29,7 +33,9 @@ module.exports = (function(){
 	},
 	jqueryMap = {},
 
-	copyAnchorMap, setJqueryMap, changeAnchorPart, onHashchange, onResize, setChatAnchor, initModule;
+	copyAnchorMap, setJqueryMap, changeAnchorPart, 
+	onHashchange, onResize, onTapAcct, onLogin, onLogout,
+	setChatAnchor, initModule;
 	// --------------------------------end module scope variables
 
 	// --------------------------------begin utility methods
@@ -42,7 +48,9 @@ module.exports = (function(){
 	setJqueryMap = function(){
 		var $container = stateMap.$container;
 		jqueryMap = {
-			$container : $container
+			$container : $container,
+			$acct : $container.find('.spa-shell-head-acct'),
+			$nav : $container.find('.spa-shell-main-nav')
 		};
 	};
 
@@ -141,6 +149,26 @@ module.exports = (function(){
 
 		return true;
 	};
+
+	onTapAcct = function(event){
+		var acct_text, user_name, user = spa_model.people.get_user();
+		if (user.get_is_anon()) {
+			user_name = prompt('please sign-in');
+			spa_model.people.login(user_name);
+			jqueryMap.$acct.text('...processing');
+		}else{
+			spa_model.people.logout();
+		}
+		return false;
+	};
+
+	onLogin = function(event, login_user){
+		jqueryMap.$acct.text(login_user.name);
+	};
+
+	onLogout = function(event, logout_user){
+		jqueryMap.$acct.text('Please sign-in');
+	};
 	// --------------------------------end event handlers
 
 	// --------------------------------begin callbacks
@@ -166,6 +194,11 @@ module.exports = (function(){
 			people_model : spa_model.people
 		});
 		spa_chat.initModule(jqueryMap.$container);
+
+		$.gevent.subscribe($container, 'spa-login', onLogin);
+		$.gevent.subscribe($container, 'spa-logout', onLogout);
+
+		jqueryMap.$acct.text('Please sign-in').bind('utap', onTapAcct);
 	};
 
 	return {initModule : initModule};
