@@ -153,7 +153,7 @@ module.exports = (function(){
 	chat = (function(){
 		var _publish_listchange, _publish_updatechat,
 			_update_list, _leave_chat,
-			get_chatee, join_chat, send_msg, set_chatee,
+			get_chatee, join_chat, send_msg, set_chatee, update_avatar,
 			chatee = null;
 
 		_update_list = function(arg_list){
@@ -288,12 +288,20 @@ module.exports = (function(){
 			return true;
 		};
 
+		update_avatar = function(avatar_update_map){
+			var sio = isFakeData ? spa_fake.mockSio : spa_data.getSio();
+			if (sio) {
+				sio.emit('updateavatar', avatar_update_map);
+			}
+		};
+
 		return {
 			_leave : _leave_chat,
 			get_chatee : get_chatee,
 			join : join_chat,
 			send_msg : send_msg,
-			set_chatee : set_chatee
+			set_chatee : set_chatee,
+			update_avatar : update_avatar
 		};
 	}());
 		
