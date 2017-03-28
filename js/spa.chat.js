@@ -2,6 +2,7 @@ require("../css/spa.chat.css");
 var spa_util = require("./spa.util.js");
 
 module.exports = (function(){
+	'use strict';
 	// --------------------------------begin module scope variables
 	var configMap = {
 		main_html : String()
